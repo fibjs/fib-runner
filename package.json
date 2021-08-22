@@ -1,0 +1,9 @@
+{
+  "name": "fib-runner",
+  "version": "1.0.0",
+  "description": "process manager for fibjs",
+  "repository": "",
+  "keywords": "",
+  "author": "",
+  "license": "ISC"
+}
