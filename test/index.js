@@ -58,7 +58,19 @@ describe('runner', () => {
             script: path.join(__dirname, "apps/app1.js")
         });
 
+        assert.equal(runner.apps["app1"].status, "RUNNING");
         wait_data();
+        assert.equal(runner.apps["app1"].status, "RUNNING");
+    });
+
+    it("not auto start", () => {
+        runner.add({
+            name: 'app2',
+            autostart: false,
+            script: path.join(__dirname, "apps/app2.js")
+        });
+
+        assert.equal(runner.apps["app2"].status, "STOPPED");
     });
 
     it("auto restart", () => {
@@ -67,6 +79,7 @@ describe('runner', () => {
             script: path.join(__dirname, "apps/app1.js")
         });
 
+        assert.equal(runner.apps["app1"].status, "RUNNING");
         wait_data();
         assert.equal(runner.apps["app1"].status, "RUNNING");
 
@@ -90,6 +103,7 @@ describe('runner', () => {
             script: path.join(__dirname, "apps/app2.js")
         });
 
+        assert.equal(runner.apps["app2"].status, "RUNNING");
         wait_data();
         assert.equal(runner.apps["app2"].status, "RUNNING");
 
@@ -109,6 +123,7 @@ describe('runner', () => {
             script: path.join(__dirname, "apps/app2.js")
         });
 
+        assert.equal(runner.apps["app2"].status, "RUNNING");
         wait_data();
         assert.equal(runner.apps["app2"].status, "RUNNING");
 
@@ -128,6 +143,7 @@ describe('runner', () => {
             script: path.join(__dirname, "apps/app2.js")
         });
 
+        assert.equal(runner.apps["app2"].status, "RUNNING");
         wait_data();
         assert.equal(runner.apps["app2"].status, "RUNNING");
 
@@ -135,6 +151,7 @@ describe('runner', () => {
         assert.equal(runner.apps["app2"].status, "STOPPING");
         runner.start('app2');
         assert.equal(runner.apps["app2"].status, "RUNNING");
+        wait_data();
         runner.stop('app2');
         assert.equal(runner.apps["app2"].status, "STOPPING");
 
@@ -144,6 +161,51 @@ describe('runner', () => {
         assert.isUndefined(runner.apps["app2"].proc);
         assert.equal(runner.apps["app2"].status, "STOPPED");
     });
+
+    it("not auto restart", () => {
+        runner.add({
+            name: 'app1',
+            autorestart: false,
+            script: path.join(__dirname, "apps/app1.js")
+        });
+
+        assert.equal(runner.apps["app1"].status, "RUNNING");
+        wait_data();
+        assert.equal(runner.apps["app1"].status, "RUNNING");
+
+        for (var i = 0; i < 10 && runner.apps["app1"].proc; i++)
+            coroutine.sleep(300);
+
+        assert.isUndefined(runner.apps["app1"].proc);
+        assert.equal(runner.apps["app1"].status, "FAILED");
+    });
+
+    it("stop/start not auto restart", () => {
+        runner.add({
+            name: 'app2',
+            autorestart: false,
+            script: path.join(__dirname, "apps/app2.js")
+        });
+
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+        wait_data();
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+
+        runner.stop('app2');
+        assert.equal(runner.apps["app2"].status, "STOPPING");
+        runner.start('app2');
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+        wait_data();
+        runner.stop('app2');
+        assert.equal(runner.apps["app2"].status, "STOPPING");
+
+        for (var i = 0; i < 10 && runner.apps["app2"].proc; i++)
+            coroutine.sleep(300);
+
+        assert.isUndefined(runner.apps["app2"].proc);
+        assert.equal(runner.apps["app2"].status, "STOPPED");
+    });
+
 });
 
 test.run(console.DEBUG);
