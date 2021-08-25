@@ -43,12 +43,10 @@ describe('runner', () => {
 
     it("new runner", () => {
         assert.deepEqual({
-            stdio: "inherit",
             autostart: true,
             startsecs: 1,
             startretries: 3,
-            autorestart: true,
-            signal: "SIGTERM"
+            autorestart: true
         }, runner.opt);
     });
 
@@ -204,6 +202,36 @@ describe('runner', () => {
 
         assert.isUndefined(runner.apps["app2"].proc);
         assert.equal(runner.apps["app2"].status, "STOPPED");
+    });
+
+    it("update option", () => {
+        runner.add({
+            name: 'app2',
+            script: path.join(__dirname, "apps/app2.js")
+        });
+
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+        wait_data();
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+
+        var reload = runner.update({
+            name: 'app2',
+            script: path.join(__dirname, "apps/app2.js"),
+            startretries: 10
+        });
+        assert.isFalse(reload);
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+
+        var reload = runner.update({
+            name: 'app2',
+            script: path.join(__dirname, "apps/app2.js"),
+            arg: ['newarg']
+        });
+        assert.isTrue(reload);
+
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+        wait_data();
+        assert.equal(runner.apps["app2"].status, "RUNNING");
     });
 
 });
