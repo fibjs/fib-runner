@@ -41,15 +41,6 @@ describe('runner', () => {
         return data;
     }
 
-    it("new runner", () => {
-        assert.deepEqual({
-            autostart: true,
-            startsecs: 1,
-            startretries: 3,
-            autorestart: true
-        }, runner.opt);
-    });
-
     it("add app", () => {
         runner.add({
             name: 'app1',
@@ -234,6 +225,39 @@ describe('runner', () => {
         assert.equal(runner.apps["app2"].status, "RUNNING");
     });
 
+    it("reload", () => {
+        runner.add({
+            name: 'app2',
+            script: path.join(__dirname, "apps/app2.js")
+        });
+
+        wait_data();
+        assert.equal(runner.apps["app2"].status, "RUNNING");
+
+        runner.add({
+            name: 'app3',
+            script: path.join(__dirname, "apps/app2.js")
+        });
+
+        wait_data();
+        assert.equal(runner.apps["app3"].status, "RUNNING");
+
+        runner.reload({
+            apps: [
+                {
+                    name: 'app2',
+                    script: path.join(__dirname, "apps/app2.js")
+                },
+                {
+                    name: 'app4',
+                    script: path.join(__dirname, "apps/app2.js")
+                }
+            ]
+        })
+
+        wait_data();
+        assert.equal(runner.apps["app4"].status, "RUNNING");
+    });
 });
 
 test.run(console.DEBUG);
