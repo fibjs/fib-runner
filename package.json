@@ -2,8 +2,16 @@
   "name": "fib-runner",
   "version": "1.0.0",
   "description": "process manager for fibjs",
+  "bin": {
+    "runnerd": "./runnerd.js",
+    "runnerctrl": "./runnerctrl.js"
+  },
   "repository": "",
   "keywords": "",
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "string-argv": "^0.3.1",
+    "asciichart": "^1.5.25"
+  }
 }
