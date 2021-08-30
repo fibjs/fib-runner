@@ -26,10 +26,10 @@ var svr = new http.Server(13828, {
                 pid: app.proc ? app.proc.pid : -1,
                 status: app.status,
                 retries: app.retries,
-                uptime: new Date() - app.uptime,
-                user: app.usage.now.user,
-                system: app.usage.now.system,
-                rss: app.usage.now.rss,
+                uptime: app.proc ? new Date() - app.uptime : 0,
+                user: app.proc ? app.proc.interval_usage.user : 0,
+                system: app.proc ? app.proc.interval_usage.system : 0,
+                rss: app.proc ? app.proc.interval_usage.rss : 0,
             };
         }
 
