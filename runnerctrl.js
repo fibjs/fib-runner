@@ -64,6 +64,12 @@ function list_usage(name, interval, type) {
     }));
 }
 
+function log(name, length) {
+    length = length || 80;
+    var r = http.get(`http://127.0.0.1:13828/log/${name}/${length}`).json();
+    process.stdout.write(r.join(''));
+}
+
 while (true) {
     var line = console.readLine("runner> ");
     const args = stringArgv(line);
@@ -90,6 +96,9 @@ while (true) {
             case 'mem':
                 list_usage(args[1], args[2], 'mem');
                 break;
+            case 'log':
+                log(args[1], args[2]);
+                break;
             case 'exit':
                 process.exit();
             default:
@@ -107,6 +116,7 @@ restart name  Restart specific process name
 
 cpu name [1]  Monitor cpu usage of specific process name
 mem name [1]  Monitor mem usage of specific process name
+log name [80] Monitor output log of specific process name
 
 exit          Exit the REPL
 `);

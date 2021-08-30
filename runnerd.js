@@ -19,6 +19,7 @@ var svr = new http.Server(13828, {
     '/list': r => r.response.json(runner.list()),
     '/cpu/:name/:interval': (r, name, interval) => r.response.json(runner.cpu_usage(name, interval)),
     '/mem/:name/:interval': (r, name, interval) => r.response.json(runner.mem_usage(name, interval)),
+    '/log/:name/:length': (r, name, length) => r.response.json(runner.log(name, length)),
     '/stop/:name': (r, name) => runner.stop(name),
     '/start/:name': (r, name) => runner.start(name),
     '/restart/:name': (r, name) => runner.restart(name),
