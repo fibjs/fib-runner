@@ -44,7 +44,7 @@ function list_usage(name, interval, type) {
     var padding = '       ';
 
     function format_cpu(x) {
-        return (padding + x.toFixed(2)).slice(-padding.length) + '%';
+        return (padding + (x * 100).toFixed(2)).slice(-padding.length) + '%';
     }
 
     function format_mem(x) {
@@ -58,12 +58,7 @@ function list_usage(name, interval, type) {
     }
 
     var r = http.get(`http://127.0.0.1:13828/${type}/${name}/${interval}`).json();
-    var usage = r.usage;
-
-    if (type == 'cpu')
-        usage = usage.map(v => v * 100);
-
-    console.log(asciichart.plot(usage, {
+    console.log(asciichart.plot(r.usage, {
         height: 10,
         format: type == 'cpu' ? format_cpu : format_mem
     }));
