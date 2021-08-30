@@ -40,6 +40,11 @@ function list() {
     }));
 }
 
+function list_usage(name, interval, type) {
+
+
+}
+
 while (true) {
     var line = console.readLine("runner> ");
     const args = stringArgv(line);
@@ -59,6 +64,12 @@ while (true) {
                 break;
             case 'restart':
                 http.get(`http://127.0.0.1:13828/restart/${args[1]}`);
+                break;
+            case 'cpu':
+                list_usage(args[1], args[2], 'cpu');
+                break;
+            case 'mem':
+                list_usage(args[1], args[2], 'mem');
                 break;
             case 'exit':
                 process.exit();
