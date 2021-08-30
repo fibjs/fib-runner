@@ -41,8 +41,32 @@ function list() {
 }
 
 function list_usage(name, interval, type) {
+    var padding = '       ';
 
+    function format_cpu(x) {
+        return (padding + x.toFixed(2)).slice(-padding.length) + '%';
+    }
 
+    function format_mem(x) {
+        return (padding + (x / (1024 * 1024)).toFixed(2)).slice(-padding.length) + ' MB';
+    }
+
+    interval = interval || 1;
+    if (interval != 1 && interval != 5 && interval != 15 && interval != 60 && interval != 240 && interval != 720) {
+        console.error(`interval must be 1|5|15|60｜240｜720.`);
+        return;
+    }
+
+    var r = http.get(`http://127.0.0.1:13828/${type}/${name}/${interval}`).json();
+    var usage = r.usage;
+
+    if (type == 'cpu')
+        usage = usage.map(v => v * 100);
+
+    console.log(asciichart.plot(usage, {
+        height: 10,
+        format: type == 'cpu' ? format_cpu : format_mem
+    }));
 }
 
 while (true) {
