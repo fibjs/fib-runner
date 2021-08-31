@@ -67,8 +67,8 @@ function list_usage(name, interval, type) {
 
 function log(name, length) {
     length = length || 80;
-    var r = http.get(`http://127.0.0.1:13828/log/${name}/${length}`).json();
-    process.stdout.write(r.join(''));
+    var r = http.get(`http://127.0.0.1:13828/log/${name}/${length}`).data;
+    process.stdout.write(r);
 }
 
 function attach(name, length) {
