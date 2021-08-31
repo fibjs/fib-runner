@@ -1,4 +1,5 @@
 var http = require('http');
+var ws = require('ws');
 var util = require('util');
 var stringArgv = require('string-argv').default;
 var asciichart = require('asciichart');
@@ -70,6 +71,14 @@ function log(name, length) {
     process.stdout.write(r.join(''));
 }
 
+function attach(name, length) {
+    length = length || 80;
+    var sock = new ws.Socket(`ws://127.0.0.1:13828/attach/${name}/${length}`);
+    sock.onmessage = msg => process.stdout.write(msg.data);
+    console.readLine();
+    sock.close();
+}
+
 while (true) {
     var line = console.readLine("runner> ");
     const args = stringArgv(line);
@@ -99,26 +108,31 @@ while (true) {
             case 'log':
                 log(args[1], args[2]);
                 break;
+            case 'attach':
+                attach(args[1], args[2]);
+                break;
             case 'exit':
                 process.exit();
             default:
                 console.error(`unknown command ${args[0]}.`);
             case 'help':
                 console.log(`
-help          Print this help message
+help              Print this help message
 
-list          Display all processes status
-reload        Reload runnerd.json
+list              Display all processes status
+reload            Reload runnerd.json
 
-stop name     Stop specific process name
-start name    Start specific process name
-restart name  Restart specific process name
+stop name         Stop specific process name
+start name        Start specific process name
+restart name      Restart specific process name
 
-cpu name [1]  Monitor cpu usage of specific process name
-mem name [1]  Monitor mem usage of specific process name
-log name [80] Monitor output log of specific process name
+cpu name [1]      Monitor cpu usage of specific process name
+mem name [1]      Monitor mem usage of specific process name
 
-exit          Exit the REPL
+log name [80]     Monitor output log of specific process name
+attach name [80]  Attach output log of specific process name
+
+exit              Exit the REPL
 `);
                 break;
         }

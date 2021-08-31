@@ -1,7 +1,9 @@
-var http = require('http');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+var http = require('http');
+var ws = require('ws');
+
 var Runner = require('.');
 
 var cpus = os.cpus().length;
@@ -20,6 +22,7 @@ var svr = new http.Server(13828, {
     '/cpu/:name/:interval': (r, name, interval) => r.response.json(runner.cpu_usage(name, interval)),
     '/mem/:name/:interval': (r, name, interval) => r.response.json(runner.mem_usage(name, interval)),
     '/log/:name/:length': (r, name, length) => r.response.json(runner.log(name, length)),
+    '/attach/:name/:length': ws.upgrade((sock, r) => runner.attach(r.params[0], sock, r.params[1])),
     '/stop/:name': (r, name) => runner.stop(name),
     '/start/:name': (r, name) => runner.start(name),
     '/restart/:name': (r, name) => runner.restart(name),
