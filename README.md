@@ -83,3 +83,7 @@ If you need to start `runnerd` as a daemon, you need to configure the start para
 fibjs runnerd --daemon
 ```
 otherwise the daemon manager will find that `runnerd` has exited while the daemon is actually running.
+
+## Used as a module
+
+You can also use `fib-runner` as a module, allowing more flexibility to customize process management to your needs by programming the `fib-runner` api directly.
