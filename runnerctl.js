@@ -193,7 +193,7 @@ mem name [1]      Monitor mem usage of specific process name
 log name [80]     Monitor output log of specific process name
 attach name [80]  Attach output log of specific process name
 
-exit              Exit the REPL
+exit              Exit runnerctl
 `);
                 break;
         }
