@@ -1,4 +1,4 @@
-# process manager for fibjs
+# process manager developed using fibjs
 fib-runner is a process manager developed using fibjs, it runs in client/server mode, it allows the server to run in a secure user, keeps the service processes safe and secure, allows the client to manage the processes, view the output logs of the processes and monitor the process resource usage.
 
 ## Install
@@ -11,7 +11,7 @@ fibjs --install fib-runner [--save]
 
 Execute the following command:
 ```sh
-fibjs fib-runnerd
+fibjs runnerd
 ```
 will start the `runnerd` daemon. The daemon will run in the background and you can continue other work in the terminal or log out without suspending the daemon.
 
