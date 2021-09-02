@@ -1,3 +1,17 @@
+var child_process = require('child_process');
+
+if (process.argv[2] !== '--daemon') {
+    child_process.fork(__filename, ['--daemon'], {
+        stdio: "inherit",
+        detached: true
+    });
+
+    console.notice(`runnerd.js is running in the background.
+use runnerctrl.js to control the service process.`);
+
+    process.exit();
+}
+
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
