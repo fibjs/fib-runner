@@ -1,0 +1,13 @@
+{
+    "apps": [
+        {
+            "name": "docs",
+            "script": "/Users/lion/Downloads/docs/svr.js",
+            "cwd": "/Users/lion/Downloads/docs/"
+        },
+        {
+            "name": "app4",
+            "script": "/Users/lion/works/modules/fib-runner/test/apps/app4.js"
+        }
+    ]
+}

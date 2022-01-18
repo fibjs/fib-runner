@@ -1,8 +1,0 @@
-{
-    "apps": [
-        {
-            "name": "app3",
-            "script": "test/apps/app3.js"
-        }
-    ]
-}

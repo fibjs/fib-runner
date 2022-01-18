@@ -17,7 +17,7 @@ will start the `runnerd` daemon. The daemon will run in the background and you c
 
 ## Configuration File
 
-The configuration file name is `runnerd.json` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified service process according to the configuration file.
+The configuration file name is `runner.json` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified service process according to the configuration file.
 
 The configuration file is a json formatted file that must contain an array of fields named `"apps"` that specify the configuration of the service process.
 
@@ -62,7 +62,7 @@ A shell will be presented that will allow you to control the processes that are 
 | ----------- | ----------- |
 | help              | Print this help message |
 | list              | Display all processes status |
-| reload            | Reload runnerd.json |
+| reload            | Reload runner.json |
 | stop name         | Stop specific process name |
 | start name        | Start specific process name |
 | restart name      | Restart specific process name |
@@ -74,7 +74,7 @@ A shell will be presented that will allow you to control the processes that are 
 
 ## Security control
 
-In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runnerd.json` manually and reload the service processes using the `reload` command. The administrator needs to ensure that `runnerd.json` is not allowed to be modified by anyone.
+In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runner.json` manually and reload the service processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
 
 ## Running runnerd as a daemon
 

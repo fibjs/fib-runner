@@ -23,7 +23,7 @@ var Runner = require('.');
 var cpus = os.cpus().length;
 
 function reload() {
-    var txt = fs.readTextFile(path.join(__dirname, "runnerd.json"));
+    var txt = fs.readTextFile("runner.json");
     runner.reload(JSON.parse(txt));
 }
 
