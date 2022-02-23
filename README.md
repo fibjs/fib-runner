@@ -84,6 +84,10 @@ fibjs runnerd --daemon
 ```
 otherwise the daemon manager will find that `runnerd` has exited while the daemon is actually running.
 
+## Unexpected exit log
+
+When the managed child process exits, if `runnerd` detects that this is an unexpected termination, it will automatically save the output of the child process to a log file named `log_${pid}.txt`.
+
 ## Used as a module
 
 You can also use `fib-runner` as a module, allowing more flexibility to customize process management to your needs by programming the `fib-runner` api directly.
