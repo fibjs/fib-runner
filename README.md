@@ -69,7 +69,7 @@ A shell will be presented that will allow you to control the processes that are 
 | cpu name [1]      | Monitor cpu usage of specific process name |
 | mem name [1]      | Monitor mem usage of specific process name |
 | log name [80]     | Monitor output log of specific process name |
-| attach name [80]  | Attach output log of specific process name |
+| attach name [80]  | Attach output log of specific process name, ctrl_z to exit |
 | exit              | Exit runnerctl |
 
 ## Security control
