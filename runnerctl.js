@@ -136,7 +136,18 @@ function attach(name, length) {
     length = length || 80;
     var sock = new ws.Socket(`ws://127.0.0.1:13828/attach/${name}/${length}`);
     sock.onmessage = msg => process.stdout.write(msg.data);
-    console.readLine();
+
+    process.stdin.setRawMode(true);
+    while (true) {
+        var ch = process.stdin.read();
+        if (ch[0] == 0x1a)
+            break;
+
+        sock.send(ch);
+    }
+    process.stdin.setRawMode(false);
+    console.log();
+
     sock.close();
 }
 
@@ -156,9 +167,11 @@ while (true) {
                 break;
             case 'start':
                 http.get(`http://127.0.0.1:13828/start/${args[1]}`);
+                attach(args[1]);
                 break;
             case 'restart':
                 http.get(`http://127.0.0.1:13828/restart/${args[1]}`);
+                attach(args[1]);
                 break;
             case 'cpu':
                 list_usage(args[1], args[2], 'cpu');

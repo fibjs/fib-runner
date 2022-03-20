@@ -1,9 +1,9 @@
 {
     "apps": [
         {
-            "name": "docs",
-            "script": "/Users/lion/Downloads/docs/svr.js",
-            "cwd": "/Users/lion/Downloads/docs/"
+            "name": "zsh",
+            "exec": "zsh",
+            "signal": "SIGKILL"
         },
         {
             "name": "app4",
