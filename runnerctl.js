@@ -2,7 +2,7 @@ var http = require('http');
 var ws = require('ws');
 var util = require('util');
 var stringArgv = require('string-argv').default;
-var asciichart = require('asciichart');
+var usage_chart = require('./lib/usage_chart');
 
 function list() {
     var apps = http.get('http://127.0.0.1:13828/list').json();
@@ -41,73 +41,7 @@ function list() {
     }));
 }
 
-function list_rule(tm, length, interval) {
-    var line = '      ───┼'
-    var rule;
-    var _date = interval >= 60;
-    var mark_interval;
-    var base_tm = tm - length + 1;
-
-    function put_mark(pos) {
-        var d = new Date((base_tm + pos) * interval * 60000);
-        var _mark = _date ? (' ' + d.getDate()).slice(-2) + '/' + ((d.getMonth() + 1) + ' ').slice(0, 2)
-            : (' ' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-
-        if (pos > 0)
-            line = line.substr(0, pos + 9) + '┬' + line.substr(pos + 10);
-        rule = rule.substr(0, pos + 7) + _mark + rule.substr(pos + 12);
-    }
-
-    switch (Number(interval)) {
-        case 1:
-            mark_interval = 15;
-            break;
-        case 5:
-            mark_interval = 60;
-            break;
-        case 15:
-            mark_interval = 180;
-            break;
-        case 60:
-            mark_interval = 1440;
-            break;
-        case 240:
-            mark_interval = 5760;
-            break;
-        case 720:
-            mark_interval = 17280;
-            break;
-    }
-
-    line = line + '─'.repeat(length + 1);
-    rule = ' '.repeat(length + 11);
-
-    put_mark(0);
-    if (length > 6) {
-        put_mark(length - 1);
-
-        var pos = (Math.floor((base_tm + 7) * interval / mark_interval) + 1) * mark_interval / interval - base_tm;
-
-        while (pos < length - 7) {
-            put_mark(pos);
-            pos += mark_interval / interval;
-        }
-    }
-
-    return line + '\n' + rule;
-}
-
 function list_usage(name, interval, type) {
-    var padding = '        ';
-
-    function format_cpu(x) {
-        return (padding + (x * 100).toFixed(2) + '%').slice(-padding.length);
-    }
-
-    function format_mem(x) {
-        return (padding + (x / (1024 * 1024)).toFixed(1) + 'M').slice(-padding.length);
-    }
-
     interval = interval || 1;
     if (interval != 1 && interval != 5 && interval != 15 && interval != 60 && interval != 240 && interval != 720) {
         console.error(`interval must be 1|5|15|60｜240｜720.`);
@@ -115,15 +49,7 @@ function list_usage(name, interval, type) {
     }
 
     var r = http.get(`http://127.0.0.1:13828/${type}/${name}/${interval}`).json();
-
-    var columns = process.stdout.columns;
-    r.usage = r.usage.slice(-(columns - 12));
-
-    console.log(asciichart.plot(r.usage, {
-        height: 10,
-        format: type == 'cpu' ? format_cpu : format_mem
-    }));
-    console.log(list_rule(r.tm, r.usage.length, interval));
+    console.log(usage_chart(type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
@@ -133,9 +59,16 @@ function log(name, length) {
 }
 
 function attach(name, length) {
+    var first = true;
     length = length || 80;
     var sock = new ws.Socket(`ws://127.0.0.1:13828/attach/${name}/${length}`);
-    sock.onmessage = msg => process.stdout.write(msg.data);
+    sock.onmessage = msg => {
+        process.stdout.write(msg.data);
+        if (first) {
+            first = false;
+            process.stdout.write("\n\nPress ctrl-z to exit interactive session.\n\n");
+        }
+    };
 
     process.stdin.setRawMode(true);
     while (true) {
@@ -204,7 +137,7 @@ cpu name [1]      Monitor cpu usage of specific process name
 mem name [1]      Monitor mem usage of specific process name
 
 log name [80]     Monitor output log of specific process name
-attach name [80]  Attach output log of specific process name
+attach name [80]  Attach output log of specific process name, ctrl+z to exit
 
 exit              Exit runnerctl
 `);
