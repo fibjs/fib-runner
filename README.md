@@ -45,8 +45,9 @@ The service process is configured with the following parameters:
 | env | the environment variables when the process starts | {} |
 | autostart | If true, this program will start automatically when `runnerd` is started. | true |
 | startsecs | Number of seconds between retries | 1 |
-| startretries | Number of consecutive failures allowed before abandonment | 3 |
+| startretries | Number of consecutive failures allowed before abandonment, set to -1 for unlimited retries | 3 |
 | autorestart | Specify whether to automatically restart | true |
+| savelog | Automatically save logs when a process exits abnormally | false |
 | signal | SIGTERM, SIGHUP, SIGINT, SIGQUIT, SIGKILL, SIGUSR1, or SIGUSR2 | "SIGTERM" |
 
 The simplest process configuration must contains at least `name` and one of `exec` and `script`. When both `exec` and `script` are specified, `runnerd` will ignore the `script` configuration.
