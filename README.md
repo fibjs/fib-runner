@@ -67,8 +67,8 @@ A shell will be presented that will allow you to control the processes that are 
 | stop name         | Stop specific process name |
 | start name        | Start specific process name |
 | restart name      | Restart specific process name |
-| cpu name [1]      | Monitor cpu usage of specific process name |
-| mem name [1]      | Monitor mem usage of specific process name |
+| .cpu name [1]     | Monitor cpu usage of specific process name |
+| .mem name [1]     | Monitor mem usage of specific process name |
 | log name [80]     | Monitor output log of specific process name |
 | attach name [80]  | Attach output log of specific process name, ctrl+z to exit |
 | exit              | Exit runnerctl |
