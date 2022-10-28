@@ -1,6 +1,7 @@
 var http = require('http');
 var ws = require('ws');
 var util = require('util');
+var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
 var usage_chart = require('./lib/usage_chart');
 
@@ -41,10 +42,10 @@ function list() {
     }));
 }
 
-function list_usage(name, interval, type) {
+function usage(name, interval, type) {
     interval = interval || 1;
     if (interval != 1 && interval != 5 && interval != 15 && interval != 60 && interval != 240 && interval != 720) {
-        console.error(`interval must be 1|5|15|60｜240｜720.`);
+        console.error(`interval must be 1|5|15|60|240|720.`);
         return;
     }
 
@@ -56,32 +57,41 @@ function log(name, length) {
     length = length || 80;
     var r = http.get(`http://127.0.0.1:13828/log/${name}/${length}`).data;
     process.stdout.write(r);
+    console.log();
 }
 
 function attach(name, length) {
+    var ev = new coroutine.Event();
     var first = true;
     length = length || 80;
     var sock = new ws.Socket(`ws://127.0.0.1:13828/attach/${name}/${length}`);
     sock.onmessage = msg => {
         process.stdout.write(msg.data);
+
         if (first) {
             first = false;
             process.stdout.write("\n\nPress ctrl-z to exit interactive session.\n\n");
+
+            process.stdin.setRawMode(true);
+            while (true) {
+                var ch = process.stdin.read();
+                if (ch[0] == 0x1a)
+                    break;
+
+                sock.send(ch);
+            }
+            process.stdin.setRawMode(false);
+            console.log();
+
+            sock.close();
+    
+            ev.set();
         }
     };
 
-    process.stdin.setRawMode(true);
-    while (true) {
-        var ch = process.stdin.read();
-        if (ch[0] == 0x1a)
-            break;
+    sock.onclose = () => ev.set();
 
-        sock.send(ch);
-    }
-    process.stdin.setRawMode(false);
-    console.log();
-
-    sock.close();
+    ev.wait();
 }
 
 while (true) {
@@ -106,12 +116,6 @@ while (true) {
                 http.get(`http://127.0.0.1:13828/restart/${args[1]}`);
                 attach(args[1]);
                 break;
-            case 'cpu':
-                list_usage(args[1], args[2], 'cpu');
-                break;
-            case 'mem':
-                list_usage(args[1], args[2], 'mem');
-                break;
             case 'log':
                 log(args[1], args[2]);
                 break;
@@ -121,6 +125,11 @@ while (true) {
             case 'exit':
                 process.exit();
             default:
+                if (args[0][0] == '.') {
+                    usage(args[1], args[2], args[0].substring(1));
+                    break;
+                }
+
                 console.error(`unknown command ${args[0]}.`);
             case 'help':
                 console.log(`
@@ -133,8 +142,9 @@ stop name         Stop specific process name
 start name        Start specific process name
 restart name      Restart specific process name
 
-cpu name [1]      Monitor cpu usage of specific process name
-mem name [1]      Monitor mem usage of specific process name
+.cpu name [1]     Monitor cpu usage of specific process name
+.mem name [1]     Monitor mem usage of specific process name
+.{stat} name [1]  Monitor {stat} usage of specific process name
 
 log name [80]     Monitor output log of specific process name
 attach name [80]  Attach output log of specific process name, ctrl+z to exit
