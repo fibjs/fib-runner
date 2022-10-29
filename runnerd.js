@@ -33,8 +33,7 @@ reload();
 var svr = new http.Server(13828, {
     '/reload': reload,
     '/list': r => r.response.json(runner.list()),
-    '/cpu/:name/:interval': (r, name, interval) => r.response.json(runner.cpu_usage(name, interval)),
-    '/mem/:name/:interval': (r, name, interval) => r.response.json(runner.mem_usage(name, interval)),
+    '/usage/:name/:stat/:interval': (r, name, stat, interval) => r.response.json(runner.usage(name, stat, interval)),
     '/log/:name/:length': (r, name, length) => r.response.write(runner.log(name, length)),
     '/attach/:name/:length': ws.upgrade((sock, r) => runner.attach(r.params[0], sock, r.params[1])),
     '/stop/:name': (r, name) => runner.stop(name),

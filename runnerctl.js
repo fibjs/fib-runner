@@ -24,7 +24,7 @@ function list() {
             app.uptime = uptime.toFixed(1) + 's';
 
         app.user = (app.user * 100).toFixed(2) + '%';
-        app.system = (app.system * 100).toFixed(2) + '%';
+        app.sys = (app.sys * 100).toFixed(2) + '%';
 
         var rss = app.rss;
         if (rss > 1024 * 1024 * 1024)
@@ -49,7 +49,7 @@ function usage(name, interval, type) {
         return;
     }
 
-    var r = http.get(`http://127.0.0.1:13828/${type}/${name}/${interval}`).json();
+    var r = http.get(`http://127.0.0.1:13828/usage/${name}/${type}/${interval}`).json();
     console.log(usage_chart(type, r.tm, r.usage, interval));
 }
 
@@ -142,12 +142,10 @@ stop name         Stop specific process name
 start name        Start specific process name
 restart name      Restart specific process name
 
-.cpu name [1]     Monitor cpu usage of specific process name
-.mem name [1]     Monitor mem usage of specific process name
-.{stat} name [1]  Monitor {stat} usage of specific process name
-
 log name [80]     Monitor output log of specific process name
 attach name [80]  Attach output log of specific process name, ctrl+z to exit
+
+.{stat} name [1]  Monitor {stat} usage of specific process name
 
 exit              Exit runnerctl
 `);
