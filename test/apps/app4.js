@@ -1,6 +1,6 @@
+var coroutine = require('coroutine');
+
 while (true) {
-    var l = console.readLine();
-    console.log(l);
-    var l = console.getpass();
-    console.log(l);
+    console.log(new Date());
+    coroutine.sleep(10);
 }

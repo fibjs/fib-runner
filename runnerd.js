@@ -30,15 +30,23 @@ function reload() {
 var runner = new Runner();
 reload();
 
+function json_call(r, func) {
+    try {
+        r.response.json(runner[func].apply(runner, r.params));
+    } catch (e) {
+        r.response.json({ error: e.message });
+    }
+}
+
 var svr = new http.Server(13828, {
     '/reload': reload,
-    '/list': r => r.response.json(runner.list()),
-    '/usage/:name/:stat/:interval': (r, name, stat, interval) => r.response.json(runner.usage(name, stat, interval)),
-    '/log/:name/:length': (r, name, length) => r.response.write(runner.log(name, length)),
+    '/list': r => json_call(r, 'list'),
+    '/stat/:name/:stat/:interval': r => json_call(r, 'stat'),
+    '/log/:name/:length': r => json_call(r, 'log'),
     '/attach/:name/:length': ws.upgrade((sock, r) => runner.attach(r.params[0], sock, r.params[1])),
-    '/stop/:name': (r, name) => runner.stop(name),
-    '/start/:name': (r, name) => runner.start(name),
-    '/restart/:name': (r, name) => runner.restart(name),
+    '/stop/:name': r => json_call(r, 'stop'),
+    '/start/:name': r => json_call(r, 'start'),
+    '/restart/:name': r => json_call(r, 'restart'),
     '*': r => { }
 });
 

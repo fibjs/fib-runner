@@ -7,7 +7,7 @@
         },
         {
             "name": "app4",
-            "script": "/Users/lion/works/modules/fib-runner/test/apps/app4.js"
+            "script": "test/apps/app4.js"
         }
     ]
 }

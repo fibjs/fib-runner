@@ -5,8 +5,18 @@ var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
 var usage_chart = require('./lib/usage_chart');
 
+function json_call(u) {
+    var r = http.get(u).json();
+    if (r.error) {
+        console.error(r.error);
+        return;
+    }
+
+    return r;
+}
+
 function list() {
-    var apps = http.get('http://127.0.0.1:13828/list').json();
+    var apps = json_call('http://127.0.0.1:13828/list');
 
     for (var name in apps) {
         var app = apps[name];
@@ -42,22 +52,25 @@ function list() {
     }));
 }
 
-function usage(name, interval, type) {
+function stat(name, interval, type) {
     interval = interval || 1;
     if (interval != 1 && interval != 5 && interval != 15 && interval != 60 && interval != 240 && interval != 720) {
         console.error(`interval must be 1|5|15|60|240|720.`);
         return;
     }
 
-    var r = http.get(`http://127.0.0.1:13828/usage/${name}/${type}/${interval}`).json();
-    console.log(usage_chart(type, r.tm, r.usage, interval));
+    var r = json_call(`http://127.0.0.1:13828/stat/${name}/${type}/${interval}`);
+    if (r)
+        console.log(usage_chart(type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
     length = length || 80;
-    var r = http.get(`http://127.0.0.1:13828/log/${name}/${length}`).data;
-    process.stdout.write(r);
-    console.log();
+    var r = json_call(`http://127.0.0.1:13828/log/${name}/${length}`);
+    if (r) {
+        process.stdout.write(r);
+        console.log();
+    }
 }
 
 function attach(name, length) {
@@ -84,7 +97,7 @@ function attach(name, length) {
             console.log();
 
             sock.close();
-    
+
             ev.set();
         }
     };
@@ -126,7 +139,7 @@ while (true) {
                 process.exit();
             default:
                 if (args[0][0] == '.') {
-                    usage(args[1], args[2], args[0].substring(1));
+                    stat(args[1], args[2], args[0].substring(1));
                     break;
                 }
 
