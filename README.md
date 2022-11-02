@@ -69,7 +69,7 @@ A shell will be presented that will allow you to control the processes that are 
 | restart name      | Restart specific process name |
 | log name [80]     | Monitor output log of specific process name |
 | attach name [80]  | Attach output log of specific process name, ctrl+z to exit |
-| .{stat} name [1]  | Monitor {stat} usage of specific process name |
+| .{stat} name [1]  | Monitor {stat} statistics of specific process name |
 | exit              | Exit runnerctl |
 
 ## Security control

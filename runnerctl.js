@@ -3,7 +3,7 @@ var ws = require('ws');
 var util = require('util');
 var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
-var usage_chart = require('./lib/usage_chart');
+var stat_chart = require('./lib/stat_chart');
 
 function json_call(u) {
     var r = http.get(u).json();
@@ -61,7 +61,7 @@ function stat(name, interval, type) {
 
     var r = json_call(`http://127.0.0.1:13828/stat/${name}/${type}/${interval}`);
     if (r)
-        console.log(usage_chart(type, r.tm, r.usage, interval));
+        console.log(stat_chart(type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
