@@ -18,6 +18,8 @@ var path = require('path');
 var http = require('http');
 var ws = require('ws');
 
+var cfg = require('./lib/config');
+
 var Runner = require('.');
 
 var cpus = os.cpus().length;
@@ -38,7 +40,7 @@ function json_call(r, func) {
     }
 }
 
-var svr = new http.Server(13828, {
+var svr = new http.Server(cfg.listen.address, cfg.listen.port, {
     '/reload': reload,
     '/list': r => json_call(r, 'list'),
     '/stat/:name/:stat/:interval': r => json_call(r, 'stat'),
