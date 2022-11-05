@@ -113,9 +113,9 @@ function attach(name, length) {
     ev.wait();
 }
 
-while (true) {
-    var line = console.readLine("runner> ");
-    const args = stringArgv(line);
+do {
+    var exec_args = process.argv.slice(2);
+    const args = exec_args.length ? exec_args : stringArgv(console.readLine("runner> "));
     if (args[0])
         switch (args[0]) {
             case 'list':
@@ -170,4 +170,4 @@ exit              Exit runnerctl
 `);
                 break;
         }
-}
+} while (exec_args.length == 0);
