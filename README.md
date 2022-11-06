@@ -1,5 +1,5 @@
 # process manager developed using fibjs
-fib-runner is a process manager developed using fibjs, it runs in client/server mode, it allows the server to run in a secure user, keeps the service processes safe and secure, allows the client to manage the processes, view the output logs of the processes and monitor the process resource usage.
+fib-runner is a process manager developed using fibjs, it runs in client/server mode, it allows the server to run in a secure user, keeps the processes safe and secure, allows the client to manage the processes, view the output logs of the processes and monitor the process resource usage.
 
 ## Install
 
@@ -15,15 +15,28 @@ fibjs runnerd
 ```
 will start the `runnerd` daemon. The daemon will run in the background and you can continue other work in the terminal or log out without suspending the daemon.
 
+## Install runnerd as a service
+
+Using runnerctl, runnerd can be installed as a system service and run automatically at system startup.
+```sh
+fibjs runnerctl install
+fibjs runnerctl uninstall
+```
 ## Configuration File
 
-The configuration file name is `runner.json` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified service process according to the configuration file.
+The configuration file name is `runner.json` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified process according to the configuration file.
 
-The configuration file is a json formatted file that must contain an array of fields named `"apps"` that specify the configuration of the service process.
+The configuration file is a json formatted file that must contain an array of fields named `"apps"` that specify the configuration of the process.
 
 The basic format of the configuration file is as follows:
 ```JavaScript
 {
+    "name": "fib-runner",
+    "description": "fibjs service runner",
+    "listen": {
+        "address": "127.0.0.1",
+        "port": 1123
+    },
     "apps": [
         {
             "name": "app_name",
@@ -33,7 +46,7 @@ The basic format of the configuration file is as follows:
 }
 ```
 
-The service process is configured with the following parameters:
+Each process is configured with the following parameters:
 | Name      | Description | Default |
 | ----------- | ----------- | --- |
 | name | process name | undefined |
@@ -62,6 +75,8 @@ A shell will be presented that will allow you to control the processes that are 
 | Command      | Description |
 | ----------- | ----------- |
 | help              | Print this help message |
+| install           | Install runnerd as a service |
+| uninstall         | Uninstall runnerd service |
 | list              | Display all processes status |
 | reload            | Reload runner.json |
 | stop name         | Stop specific process name |
@@ -69,12 +84,18 @@ A shell will be presented that will allow you to control the processes that are 
 | restart name      | Restart specific process name |
 | log name [80]     | Monitor output log of specific process name |
 | attach name [80]  | Attach output log of specific process name, ctrl+z to exit |
-| .{stat} name [1]  | Monitor {stat} statistics of specific process name |
+| .{stat} name [1]  | Monitor {stat} statistics of specific process name<br>{stat} will be rss, cpu, user, sys etc.  |
 | exit              | Exit runnerctl |
+
+The runnerctl command can also be executed from the command line, such as:
+```sh
+fibjs runnerctl list
+```
+
 
 ## Security control
 
-In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runner.json` manually and reload the service processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
+In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runner.json` manually and reload the processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
 
 ## Running runnerd as a daemon
 
