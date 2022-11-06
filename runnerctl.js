@@ -4,6 +4,7 @@ var util = require('util');
 var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
 var stat_chart = require('./lib/stat_chart');
+var daemon = require('./lib/daemon');
 var cfg = require('./lib/config');
 
 if (cfg.listen.address === '0.0.0.0')
@@ -118,6 +119,12 @@ do {
     const args = exec_args.length ? exec_args : stringArgv(console.readLine("runner> "));
     if (args[0])
         switch (args[0]) {
+            case 'install':
+                daemon.install(cfg);
+                break;
+            case 'uninstall':
+                daemon.uninstall(cfg);
+                break;
             case 'list':
                 list();
                 break;
