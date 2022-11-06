@@ -19,8 +19,8 @@ will start the `runnerd` daemon. The daemon will run in the background and you c
 
 Using runnerctl, runnerd can be installed as a system service and run automatically at system startup.
 ```sh
-fibjs runnerctl install
-fibjs runnerctl uninstall
+sudo fibjs runnerctl install
+sudo fibjs runnerctl uninstall
 ```
 ## Configuration File
 
