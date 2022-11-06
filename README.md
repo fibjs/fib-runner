@@ -97,14 +97,6 @@ fibjs runnerctl list
 
 In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runner.json` manually and reload the processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
 
-## Running runnerd as a daemon
-
-If you need to start `runnerd` as a daemon, you need to configure the start parameter to:
-```sh
-fibjs runnerd --daemon
-```
-otherwise the daemon manager will find that `runnerd` has exited while the daemon is actually running.
-
 ## Unexpected exit log
 
 When the managed child process exits, if `runnerd` detects that this is an unexpected termination, it will automatically save the output of the child process to a log file named `log_${pid}.txt`.
