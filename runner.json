@@ -8,7 +8,8 @@
         },
         {
             "name": "app4",
-            "script": "test/apps/app4.js"
+            "script": "test/apps/app4.js",
+            "savelog": true
         },
         {
             "name": "ext",

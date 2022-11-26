@@ -68,7 +68,7 @@ function stat(name, interval, type) {
 
     var r = json_call(`http://${rpc_url}/stat/${name}/${type}/${interval}`);
     if (r)
-        console.log(stat_chart(type, r.tm, r.usage, interval));
+        console.log(stat_chart(type, r.type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
