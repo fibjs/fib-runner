@@ -260,4 +260,4 @@ describe('runner', () => {
     });
 });
 
-test.run(console.DEBUG);
+test.run();

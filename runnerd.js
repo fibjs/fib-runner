@@ -18,19 +18,16 @@ var path = require('path');
 var http = require('http');
 var ws = require('ws');
 
-var cfg = require('./lib/config');
+var load_config = require('./lib/config');
 
 var Runner = require('.');
-
-var cpus = os.cpus().length;
+var cfg = load_config();
+var runner = new Runner();
 
 function reload() {
-    var txt = fs.readTextFile("runner.json");
-    runner.reload(JSON.parse(txt));
+    cfg = load_config();
+    runner.reload(cfg);
 }
-
-var runner = new Runner();
-reload();
 
 function json_call(r, func) {
     try {
@@ -53,3 +50,5 @@ var svr = new http.Server(cfg.listen.address, cfg.listen.port, {
 });
 
 svr.start();
+
+reload();

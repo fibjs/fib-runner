@@ -5,7 +5,7 @@ var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
 var stat_chart = require('./lib/stat_chart');
 var daemon = require('./lib/daemon');
-var cfg = require('./lib/config');
+var cfg = require('./lib/config')();
 
 if (cfg.listen.address === '0.0.0.0')
     cfg.listen.address = '127.0.0.1';
@@ -160,6 +160,9 @@ do {
             case 'help':
                 console.log(`
 help              Print this help message
+
+install           Install runnerd as a service
+uninstall         Uninstall runnerd service 
 
 list              Display all processes status
 reload            Reload runnerd.json
