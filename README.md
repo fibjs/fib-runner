@@ -17,14 +17,14 @@ will start the `runnerd` daemon. The daemon will run in the background and you c
 
 ## Install runnerd as a service
 
-Using runnerctl, runnerd can be installed as a system service and run automatically at system startup.
+Using `runnerctl`, `runnerd` can be installed as a system service and run automatically at system startup.
 ```sh
 sudo fibjs runnerctl install
 sudo fibjs runnerctl uninstall
 ```
 ## Configuration File
 
-The configuration file name is `runner.json` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified process according to the configuration file.
+The configuration file name is ``runner.json`` and needs to be stored in the current directory of the operating system when running `runnerd`. `runnerd` will automatically load the configuration file and start the specified process according to the configuration file.
 
 The configuration file is a json formatted file that must contain an array of fields named `"apps"` that specify the configuration of the process.
 
@@ -39,9 +39,17 @@ The basic format of the configuration file is as follows:
     },
     "apps": [
         {
-            "name": "app_name",
+            "name": "exec_name",
+            "script": "/path/to/app"
+        },
+        {
+            "name": "script_name",
             "script": "/path/to/app.js"
-        }
+        },
+        {
+            "name": "prj_name",
+            "runner": "/project/path/to"
+        },
     ]
 }
 ```
@@ -53,6 +61,7 @@ Each process is configured with the following parameters:
 | description | description of the process | 'app_description' |
 | exec | exec file, `runnerd` will start the program directly | undefined |
 | script | script file, `runnerd` will use fibjs to start the script program | undefined |
+| runner | external runner folder, `runnerd` will load `runner.json` from this directory as a subproject | undefined |
 | cwd | the working directory when the process starts | undefined |
 | arg | the list of parameters when the process is started | [] |
 | env | the environment variables when the process starts | {} |
@@ -64,6 +73,35 @@ Each process is configured with the following parameters:
 | signal | SIGTERM, SIGHUP, SIGINT, SIGQUIT, SIGKILL, SIGUSR1, or SIGUSR2 | "SIGTERM" |
 
 The simplest process configuration must contains at least `name` and one of `exec` and `script`. When both `exec` and `script` are specified, `runnerd` will ignore the `script` configuration.
+
+## Sub project
+
+By configuring the property runner in `runner.json` , `runnerd` can manage external projects. For example, we have a runner project, which is stored under the directory `ext-app`, and the content of `runner.json` is as follows:
+```JavaScript
+{
+    "apps": [
+        {
+            "name": "app5",
+            "script": "app5.js"
+        }
+    ]
+}
+```
+Create a new `runner.json` with the following content:
+```JavaScript
+{
+    "apps": [
+        {
+            "name": "ext",
+            "runner": "ext-app"
+        }
+    ]
+}
+```
+After running `runnerd` we will get a process list like this:
+| (index)  |  pid  | status  | retries | uptime | user  |  sys  |   rss    |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| ext.app5 | 50026 | RUNNING |    0    |  5.8s  | 0.02% | 0.01% | 28.41 MB |
 
 ## Running runnerctl
 
@@ -87,7 +125,7 @@ A shell will be presented that will allow you to control the processes that are 
 | .{stat} name [1]  | Monitor {stat} statistics of specific process name<br>{stat} will be rss, cpu, user, sys etc.  |
 | exit              | Exit runnerctl |
 
-The runnerctl command can also be executed from the command line, such as:
+The `runnerctl` command can also be executed from the command line, such as:
 ```sh
 fibjs runnerctl list
 ```

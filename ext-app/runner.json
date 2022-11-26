@@ -1,0 +1,8 @@
+{
+    "apps": [
+        {
+            "name": "app5",
+            "script": "app5.js"
+        }
+    ]
+}
