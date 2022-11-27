@@ -17,7 +17,18 @@ if (cfg.listen.address === '0.0.0.0')
 var rpc_url = `${cfg.listen.address}:${cfg.listen.port}`;
 
 function json_call(u) {
-    var r = http.get(u).json();
+    try {
+        var r = http.get(`https://${rpc_url}/${u}`);
+        if (!r.ok) {
+            console.error(r.statusMessage);
+            return;
+        }
+        r = r.json();
+    } catch (e) {
+        console.error(e.message);
+        return;
+    }
+
     if (r.error) {
         console.error(r.error);
         return;
@@ -27,7 +38,9 @@ function json_call(u) {
 }
 
 function list() {
-    var apps = json_call(`https://${rpc_url}/list`);
+    var apps = json_call(`list`);
+    if (!apps)
+        return;
 
     for (var name in apps) {
         var app = apps[name];
@@ -70,14 +83,14 @@ function stat(name, interval, type) {
         return;
     }
 
-    var r = json_call(`https://${rpc_url}/stat/${name}/${type}/${interval}`);
+    var r = json_call(`stat/${name}/${type}/${interval}`);
     if (r)
         console.log(stat_chart(type, r.type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
     length = length || 80;
-    var r = json_call(`https://${rpc_url}/log/${name}/${length}`);
+    var r = json_call(`log/${name}/${length}`);
     if (r) {
         process.stdout.write(r);
         console.log();
@@ -119,8 +132,7 @@ function attach(name, length) {
 }
 
 var exec_args = process.argv.slice(2);
-if(exec_args[0] == '-s')
-{
+if (exec_args[0] == '-s') {
     rpc_url = exec_args[1];
     exec_args = exec_args.slice(2);
 }
@@ -139,18 +151,18 @@ do {
                 list();
                 break;
             case 'reload':
-                http.get(`https://${rpc_url}/reload`);
+                json_call(`reload`);
                 break;
             case 'stop':
-                http.get(`https://${rpc_url}/stop/${args[1]}`);
+                json_call(`stop/${args[1]}`);
                 break;
             case 'start':
-                http.get(`https://${rpc_url}/start/${args[1]}`);
-                attach(args[1]);
+                if (json_call(`start/${args[1]}`))
+                    attach(args[1]);
                 break;
             case 'restart':
-                http.get(`https://${rpc_url}/restart/${args[1]}`);
-                attach(args[1]);
+                if (json_call(`restart/${args[1]}`))
+                    attach(args[1]);
                 break;
             case 'log':
                 log(args[1], args[2]);

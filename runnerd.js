@@ -25,9 +25,19 @@ var Runner = require('.');
 var cfg = load_config();
 var runner = new Runner();
 
-function reload() {
-    cfg = load_config();
-    runner.reload(cfg);
+function reload(r) {
+    try {
+        cfg = load_config();
+        runner.reload(cfg);
+
+        if (r)
+            r.response.json({});
+    } catch (e) {
+        if (r)
+            r.response.json({ error: e.message });
+        else
+            rethrow(e);
+    }
 }
 
 function json_call(r, func) {
@@ -57,16 +67,12 @@ var svr = new ssl.Server(cfg.crt.crt, cfg.crt.key, cfg.listen.address, cfg.liste
     var ip = s.stream.remoteAddress;
     var pub = s.peerCert.publicKey.json({ compress: true }).x;
 
-    if (ip == '127.0.0.1') {
-        if (pub != cfg.key.pub)
-            return;
-    } else if (cfg.key.admin.indexOf(pub) < 0)
-        return;
-
-    return handler;
+    if (ip == '127.0.0.1' ? pub != cfg.key.pub : cfg.key.admin.indexOf(pub) < 0)
+        s.write(`HTTP/1.1 403 Forbidden\r\n\r\n`);
+    else
+        return handler;
 });
 svr.verification = ssl.VERIFY_OPTIONAL;
-
 svr.start();
 
 reload();
