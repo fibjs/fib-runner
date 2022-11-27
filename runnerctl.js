@@ -1,11 +1,15 @@
 var http = require('http');
 var ws = require('ws');
+var ssl = require('ssl');
 var util = require('util');
 var coroutine = require('coroutine');
 var stringArgv = require('string-argv').default;
 var stat_chart = require('./lib/stat_chart');
 var daemon = require('./lib/daemon');
 var cfg = require('./lib/config')();
+
+ssl.verification = ssl.VERIFY_OPTIONAL;
+ssl.setClientCert(cfg.crt.crt, cfg.crt.key);
 
 if (cfg.listen.address === '0.0.0.0')
     cfg.listen.address = '127.0.0.1';
@@ -23,7 +27,7 @@ function json_call(u) {
 }
 
 function list() {
-    var apps = json_call(`http://${rpc_url}/list`);
+    var apps = json_call(`https://${rpc_url}/list`);
 
     for (var name in apps) {
         var app = apps[name];
@@ -66,14 +70,14 @@ function stat(name, interval, type) {
         return;
     }
 
-    var r = json_call(`http://${rpc_url}/stat/${name}/${type}/${interval}`);
+    var r = json_call(`https://${rpc_url}/stat/${name}/${type}/${interval}`);
     if (r)
         console.log(stat_chart(type, r.type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
     length = length || 80;
-    var r = json_call(`http://${rpc_url}/log/${name}/${length}`);
+    var r = json_call(`https://${rpc_url}/log/${name}/${length}`);
     if (r) {
         process.stdout.write(r);
         console.log();
@@ -84,7 +88,7 @@ function attach(name, length) {
     var ev = new coroutine.Event();
     var first = true;
     length = length || 80;
-    var sock = new ws.Socket(`ws://${rpc_url}/attach/${name}/${length}`);
+    var sock = new ws.Socket(`wss://${rpc_url}/attach/${name}/${length}`);
     sock.onmessage = msg => {
         process.stdout.write(msg.data);
 
@@ -129,17 +133,17 @@ do {
                 list();
                 break;
             case 'reload':
-                http.get(`http://${rpc_url}/reload`);
+                http.get(`https://${rpc_url}/reload`);
                 break;
             case 'stop':
-                http.get(`http://${rpc_url}/stop/${args[1]}`);
+                http.get(`https://${rpc_url}/stop/${args[1]}`);
                 break;
             case 'start':
-                http.get(`http://${rpc_url}/start/${args[1]}`);
+                http.get(`https://${rpc_url}/start/${args[1]}`);
                 attach(args[1]);
                 break;
             case 'restart':
-                http.get(`http://${rpc_url}/restart/${args[1]}`);
+                http.get(`https://${rpc_url}/restart/${args[1]}`);
                 attach(args[1]);
                 break;
             case 'log':

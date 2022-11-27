@@ -17,6 +17,7 @@ var os = require('os');
 var path = require('path');
 var http = require('http');
 var ws = require('ws');
+var ssl = require('ssl');
 
 var load_config = require('./lib/config');
 
@@ -37,7 +38,7 @@ function json_call(r, func) {
     }
 }
 
-var svr = new http.Server(cfg.listen.address, cfg.listen.port, {
+var handler = new http.Handler({
     '/reload': reload,
     '/list': r => json_call(r, 'list'),
     '/stat/:name/:stat/:interval': r => json_call(r, 'stat'),
@@ -48,6 +49,23 @@ var svr = new http.Server(cfg.listen.address, cfg.listen.port, {
     '/restart/:name': r => json_call(r, 'restart'),
     '*': r => { }
 });
+
+var svr = new ssl.Server(cfg.crt.crt, cfg.crt.key, cfg.listen.address, cfg.listen.port, s => {
+    if (!s.peerCert)
+        return;
+
+    var ip = s.stream.remoteAddress;
+    var pub = s.peerCert.publicKey.json({ compress: true }).x;
+
+    if (ip == '127.0.0.1') {
+        if (pub != cfg.key.pub)
+            return;
+    } else if (pub != cfg.key.admin)
+        return;
+
+    return handler;
+});
+svr.verification = ssl.VERIFY_OPTIONAL;
 
 svr.start();
 
