@@ -1,6 +1,6 @@
 {
   "name": "fib-runner",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "process manager developed using fibjs",
   "bin": {
     "runnerd": "./runnerd.js",
