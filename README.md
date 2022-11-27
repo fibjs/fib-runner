@@ -87,7 +87,7 @@ By configuring the property runner in `runner.json` , `runnerd` can manage exter
     ]
 }
 ```
-Create a new `runner.json` with the following content:
+In the main `runner.json` configuration, add the sub project as follows:
 ```JavaScript
 {
     "apps": [
@@ -103,11 +103,51 @@ After running `runnerd` we will get a process list like this:
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | ext.app5 | 50026 | RUNNING |    0    |  5.8s  | 0.02% | 0.01% | 28.41 MB |
 
+## Remote management
+
+By default, `runnerd` does not allow remote control, and the control interface is bound to ip `127.0.0.1`. If you want to control the `runnerd` service remotely, you need to manually modify `runner.json` to enable remote management. 
+
+step 1, you need to allow external ip access control interface:
+```JavaScript
+{
+    "listen": {
+        "address": "0.0.0.0",
+        "port": 1123
+    }
+}
+```
+step 2, check `runner.json` in an admin node to find your public key, if `runner.json` does not exist, you can run `runnerctl` to generate it automatically:
+```JavaScript
+{
+    "key": {
+        "pub": "AmqJ_fkfQxKnuoG3-fkgNs51jVMj6oS9-XvPGw7Np4ZJ",
+        "key": "wHo9IdgYD-XattkLC8uj85T0G1a-ZPob0PELQVUv2aE",
+        "admin": []
+    },
+}
+```
+step 3, add your public key `"AmqJ_fkfQxKnuoG3-fkgNs51jVMj6oS9-XvPGw7Np4ZJ"` to the admin list of `runner.json` in the worker node::
+```JavaScript
+{
+    "key": {
+        "pub": "A8Vw0C1U0nEkXLQBQ0GzC8WIPZyyt-UtNsVMvnMuSJaX",
+        "key": "6u3vfP8yRMgePxcDqPBZVNrOKD2iSAKKdN8SA6iKCXk",
+        "admin": [
+            "AmqJ_fkfQxKnuoG3-fkgNs51jVMj6oS9-XvPGw7Np4ZJ"
+        ]
+    }
+}
+```
+Now you can control the `runnerd` service in the worker node from the admin node:
+```sh
+fibjs runnerctl -s ip:port
+```
+
 ## Running runnerctl
 
 To start `runnerctl`, run:
 ```sh
-fibjs runnerctl
+fibjs runnerctl [-s ip:port] [command] [...args]
 ```
 A shell will be presented that will allow you to control the processes that are currently managed by `runnerd`. Type “help” at the prompt to get information about the `runnerd` commands. `runnerctl` supports the following commands:
 | Command      | Description |
@@ -130,10 +170,9 @@ The `runnerctl` command can also be executed from the command line, such as:
 fibjs runnerctl list
 ```
 
-
 ## Security control
 
-In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control operations and monitoring operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you need to modify or add processes, you need to modify `runner.json` manually and reload the processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
+In order to avoid security issues caused by illegal users using `runnerd` to elevate runtime privileges, only control and monitor operations are allowed in `runnerctl`, and there is no permission to modify or add processes. If you want to modify or add processes, you need to modify `runner.json` manually and reload the processes using the `reload` command. The administrator needs to ensure that `runner.json` is not allowed to be modified by anyone.
 
 ## Unexpected exit log
 

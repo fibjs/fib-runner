@@ -60,7 +60,7 @@ var svr = new ssl.Server(cfg.crt.crt, cfg.crt.key, cfg.listen.address, cfg.liste
     if (ip == '127.0.0.1') {
         if (pub != cfg.key.pub)
             return;
-    } else if (pub != cfg.key.admin)
+    } else if (cfg.key.admin.indexOf(pub) < 0)
         return;
 
     return handler;

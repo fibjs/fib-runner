@@ -14,7 +14,7 @@ ssl.setClientCert(cfg.crt.crt, cfg.crt.key);
 if (cfg.listen.address === '0.0.0.0')
     cfg.listen.address = '127.0.0.1';
 
-const rpc_url = `${cfg.listen.address}:${cfg.listen.port}`;
+var rpc_url = `${cfg.listen.address}:${cfg.listen.port}`;
 
 function json_call(u) {
     var r = http.get(u).json();
@@ -118,8 +118,14 @@ function attach(name, length) {
     ev.wait();
 }
 
+var exec_args = process.argv.slice(2);
+if(exec_args[0] == '-s')
+{
+    rpc_url = exec_args[1];
+    exec_args = exec_args.slice(2);
+}
+
 do {
-    var exec_args = process.argv.slice(2);
     const args = exec_args.length ? exec_args : stringArgv(console.readLine("runner> "));
     if (args[0])
         switch (args[0]) {
