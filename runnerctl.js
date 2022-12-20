@@ -8,8 +8,9 @@ var stat_chart = require('./lib/stat_chart');
 var daemon = require('./lib/daemon');
 var cfg = require('./lib/config')();
 
-ssl.verification = ssl.VERIFY_OPTIONAL;
-ssl.setClientCert(cfg.crt.crt, cfg.crt.key);
+var client = new http.Client();
+client.sslVerification = ssl.VERIFY_OPTIONAL;
+client.setClientCert(cfg.crt.crt, cfg.crt.key);
 
 if (cfg.listen.address === '0.0.0.0')
     cfg.listen.address = '127.0.0.1';
@@ -18,7 +19,7 @@ var rpc_url = `${cfg.listen.address}:${cfg.listen.port}`;
 
 function json_call(u) {
     try {
-        var r = http.get(`https://${rpc_url}/${u}`);
+        var r = client.get(`https://${rpc_url}/${u}`);
         if (!r.ok) {
             console.error(r.statusMessage);
             return;
