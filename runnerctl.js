@@ -9,6 +9,7 @@ var daemon = require('./lib/daemon');
 var cfg = require('./lib/config')();
 
 var client = new http.Client();
+ssl.verification = ssl.VERIFY_OPTIONAL;
 client.sslVerification = ssl.VERIFY_OPTIONAL;
 client.setClientCert(cfg.crt.crt, cfg.crt.key);
 
