@@ -103,7 +103,9 @@ function attach(name, length) {
     var ev = new coroutine.Event();
     var first = true;
     length = length || 80;
-    var sock = new ws.Socket(`wss://${rpc_url}/attach/${name}/${length}`);
+    var sock = new ws.Socket(`wss://${rpc_url}/attach/${name}/${length}`, {
+        httpClient: client
+    });
     sock.onmessage = msg => {
         process.stdout.write(msg.data);
 
