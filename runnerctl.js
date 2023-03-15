@@ -59,9 +59,6 @@ function list() {
         else
             app.uptime = uptime.toFixed(1) + 's';
 
-        app.user = (app.user * 100).toFixed(2) + '%';
-        app.sys = (app.sys * 100).toFixed(2) + '%';
-
         var rss = app.rss;
         if (rss > 1024 * 1024 * 1024)
             app.rss = (rss / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
@@ -69,6 +66,8 @@ function list() {
             app.rss = (rss / (1024 * 1024)).toFixed(2) + ' MB';
         else
             app.rss = (rss / 1024).toFixed(2) + ' KB';
+
+        app.cpu = stat_chart.cpu_chart(app.cpu);
     }
 
     console.log(util.inspect(apps, {
@@ -87,7 +86,7 @@ function stat(name, interval, type) {
 
     var r = json_call(`stat/${name}/${type}/${interval}`);
     if (r)
-        console.log(stat_chart(type, r.type, r.tm, r.usage, interval));
+        console.log(stat_chart.stat_chart(type, r.type, r.tm, r.usage, interval));
 }
 
 function log(name, length) {
