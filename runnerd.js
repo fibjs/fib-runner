@@ -1,6 +1,6 @@
 var child_process = require('child_process');
 
-if (process.argv[2] !== '--daemon') {
+if (process.argv[2] !== '--daemon' && process.argv[2] !== '--console') {
     child_process.fork(__filename, ['--daemon'], {
         stdio: "inherit",
         detached: true
@@ -77,5 +77,6 @@ svr.start();
 
 reload();
 
-while (true)
-    run(path.join(__dirname, "runnerctl.js"));
+if (process.argv[2] == '--console')
+    while (true)
+        run(path.join(__dirname, "runnerctl.js"));

@@ -15,6 +15,14 @@ fibjs runnerd
 ```
 will start the `runnerd` daemon. The daemon will run in the background and you can continue other work in the terminal or log out without suspending the daemon.
 
+## Run as a console
+
+Runs in console mode:
+```sh
+fibjs runnerd --console
+```
+When running in console mode, `runnerd` will enter the `runnerctl` console immediately after startup, and you can manipulate child processes from the console. This is useful when starting `runnerd` within docker.
+
 ## Install runnerd as a service
 
 Using `runnerctl`, `runnerd` can be installed as a system service and run automatically at system startup.

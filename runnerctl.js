@@ -135,7 +135,7 @@ function attach(name, length) {
 }
 
 var exec_args = process.argv.slice(2);
-if (exec_args[0] == '--daemon')
+if (exec_args[0] == '--console')
     exec_args = exec_args.slice(1);
 
 if (exec_args[0] == '-s') {
