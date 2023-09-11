@@ -76,3 +76,6 @@ svr.verification = ssl.VERIFY_OPTIONAL;
 svr.start();
 
 reload();
+
+while (true)
+    run(path.join(__dirname, "runnerctl.js"));

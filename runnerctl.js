@@ -135,6 +135,9 @@ function attach(name, length) {
 }
 
 var exec_args = process.argv.slice(2);
+if (exec_args[0] == '--daemon')
+    exec_args = exec_args.slice(1);
+
 if (exec_args[0] == '-s') {
     rpc_url = exec_args[1];
     exec_args = exec_args.slice(2);
@@ -174,7 +177,8 @@ do {
                 attach(args[1], args[2]);
                 break;
             case 'exit':
-                process.exit();
+                exec_args = ["--exit"];
+                break;
             default:
                 if (args[0][0] == '.') {
                     stat(args[1], args[2], args[0].substring(1));
