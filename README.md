@@ -48,7 +48,7 @@ The basic format of the configuration file is as follows:
     "apps": [
         {
             "name": "exec_name",
-            "script": "/path/to/app"
+            "exec": "/path/to/app"
         },
         {
             "name": "script_name",
