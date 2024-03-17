@@ -18,6 +18,7 @@ var path = require('path');
 var http = require('http');
 var ws = require('ws');
 var ssl = require('ssl');
+var tls = require('tls');
 
 var load_config = require('./lib/config');
 
@@ -60,20 +61,46 @@ var handler = new http.Handler({
     '*': r => { }
 });
 
-var svr = new ssl.Server(cfg.crt.crt, cfg.crt.key, cfg.listen.address, cfg.listen.port, s => {
-    if (!s.peerCert)
-        return;
+if (ssl.setClientCert) {
+    var svr = new ssl.Server(cfg.cert.cert, cfg.cert.key, cfg.listen.address, cfg.listen.port, s => {
+        if (!s.peerCert)
+            return;
 
-    var ip = s.stream.remoteAddress;
-    var pub = s.peerCert.publicKey.json({ compress: true }).x;
+        var ip = s.stream.remoteAddress;
+        var pub = s.peerCert.publicKey.json({ compress: true }).x;
 
-    if (ip == '127.0.0.1' ? pub != cfg.key.pub : cfg.key.admin.indexOf(pub) < 0)
-        s.write(`HTTP/1.1 403 Forbidden\r\n\r\n`);
-    else
-        return handler;
-});
-svr.verification = ssl.VERIFY_OPTIONAL;
-svr.start();
+        if (ip == '127.0.0.1' ? pub != cfg.key.pub : cfg.key.admin.indexOf(pub) < 0)
+            s.write(`HTTP/1.1 403 Forbidden\r\n\r\n`);
+        else
+            return handler;
+    });
+    svr.verification = ssl.VERIFY_OPTIONAL;
+    svr.start();
+} else {
+    var svr = new tls.Server({
+        cert: cfg.cert.cert,
+        key: cfg.cert.key,
+        requestCert: false,
+        address: cfg.listen.address,
+        port: cfg.listen.port
+    }, s => {
+        const peerCert = s.getX509Certificate();
+        if (!peerCert)
+            return;
+
+        var ip = s.remoteAddress;
+        var pub = peerCert.publicKey.export({
+            format: 'raw',
+            type: 'compressed'
+        }).toString('base64url');
+
+        if (ip == '127.0.0.1' ? pub != cfg.key.pub : cfg.key.admin.indexOf(pub) < 0)
+            s.write(`HTTP/1.1 403 Forbidden\r\n\r\n`);
+        else
+            return handler;
+    });
+    svr.start();
+}
 
 reload();
 

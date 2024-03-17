@@ -8,10 +8,20 @@ var stat_chart = require('./lib/stat_chart');
 var daemon = require('./lib/daemon');
 var cfg = require('./lib/config')();
 
-var client = new http.Client();
-ssl.verification = ssl.VERIFY_OPTIONAL;
-client.sslVerification = ssl.VERIFY_OPTIONAL;
-client.setClientCert(cfg.crt.crt, cfg.crt.key);
+var client;
+
+if (ssl.setClientCert) {
+    client = new http.Client();
+    ssl.verification = ssl.VERIFY_OPTIONAL;
+    client.sslVerification = ssl.VERIFY_OPTIONAL;
+    client.setClientCert(cfg.cert.cert, cfg.cert.key);
+} else {
+    client = new http.Client({
+        cert: cfg.cert.cert,
+        key: cfg.cert.key,
+        requestCert: false
+    });
+}
 
 if (cfg.listen.address === '0.0.0.0')
     cfg.listen.address = '127.0.0.1';
@@ -22,7 +32,7 @@ function json_call(u) {
     try {
         var r = client.get(`https://${rpc_url}/${u}`);
         if (!r.ok) {
-            console.error(r.statusMessage);
+            console.error("Server response:", r.statusMessage);
             return;
         }
         r = r.json();
