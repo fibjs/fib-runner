@@ -80,11 +80,11 @@ if (ssl.setClientCert) {
     var svr = new tls.Server({
         cert: cfg.cert.cert,
         key: cfg.cert.key,
-        requestCert: false,
+        rejectUnverified: false,
         address: cfg.listen.address,
         port: cfg.listen.port
     }, s => {
-        const peerCert = s.getX509Certificate();
+        const peerCert = s.getPeerX509Certificate();
         if (!peerCert)
             return;
 
