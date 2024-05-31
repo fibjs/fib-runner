@@ -1,3 +1,4 @@
+#!/usr/bin/env fibjs
 var child_process = require('child_process');
 
 if (process.argv[2] !== '--daemon' && process.argv[2] !== '--console') {

@@ -1,3 +1,4 @@
+#!/usr/bin/env fibjs
 var http = require('http');
 var ws = require('ws');
 var ssl = require('ssl');
